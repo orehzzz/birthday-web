@@ -1,47 +1,67 @@
 import streamlit as st
 from streamlit_calendar import calendar
+import requests
+import datetime
 
-st.title('Your birthdays')
+st.title("Your birthdays")
 
 calendar_options = {
-    "headerToolbar": {
-        "left": "",
-        "center": "title",
-        "right": "today prev,next"
-    },
-    "slotMinTime": "06:00:00",
-    "slotMaxTime": "18:00:00",
+    "firstDay": "1",  # Monday
+    "headerToolbar": {"center": "title", "right": "today prev,next", "left": ""},
     "initialView": "dayGridMonth",
-    "resourceGroupField": "building",
-    "resources": [
-        {"id": "a", "building": "Building A", "title": "Building A"},
-        {"id": "b", "building": "Building A", "title": "Building B"},
-        {"id": "c", "building": "Building B", "title": "Building C"},
-        {"id": "d", "building": "Building B", "title": "Building D"},
-        {"id": "e", "building": "Building C", "title": "Building E"},
-        {"id": "f", "building": "Building C", "title": "Building F"},
-    ],
+    # "slotMinTime": "06:00:00",
+    # "slotMaxTime": "18:00:00",
+    # "resourceGroupField": "building",
+    # "resources": [
+    #     {"id": "a", "building": "Building A", "title": "Building A"},
+    #     {"id": "b", "building": "Building A", "title": "Building B"},
+    #     {"id": "c", "building": "Building B", "title": "Building C"},
+    #     {"id": "d", "building": "Building B", "title": "Building D"},
+    #     {"id": "e", "building": "Building C", "title": "Building E"},
+    #     {"id": "f", "building": "Building C", "title": "Building F"},
+    # ],
 }
-calendar_events = [
-    {
-        "title": "Event 1",
-        "start": "2023-07-31T08:30:00",
-        "end": "2023-07-31T10:30:00",
-        "resourceId": "a",
-    },
-    {
-        "title": "Event 2",
-        "start": "2023-07-31T07:30:00",
-        "end": "2023-07-31T10:30:00",
-        "resourceId": "b",
-    },
-    {
-        "title": "Event 3",
-        "start": "2023-07-31T10:40:00",
-        "end": "2023-07-31T12:30:00",
-        "resourceId": "a",
-    },
-]
+
+# calendar_events = [
+#     {
+#         "title": "Oleh",
+#         "allDay": "true",
+#         "start": "2023-10-04T00:00:00",
+#         "resourceId": "a",
+#         "description": "Lecture",
+#     },
+#     {
+#         "title": "Nazar",
+#         "allDay": "true",
+#         "start": "2023-11-04T00:00:00",
+#         "resourceId": "b",
+#     },
+#     {
+#         "title": "Natali Samoylenko",
+#         "allDay": "true",
+#         "start": "2023-10-14T00:00:00",
+#         "resourceId": "a",
+#     },
+# ]
+
+
+# @st.cache_data
+def calendar_data():
+    calendar_events = []
+    data = requests.get("http://127.0.0.1:80/birthdays", params={"id": 1234}).json()
+
+    for datacell in data:
+        birthday = {
+            "title": datacell["name"],
+            "start": datetime.datetime(
+                datetime.date.today().year, datacell["month"], datacell["day"], 0, 0, 0
+            ).isoformat(),
+            "allDay": "true",
+        }
+        calendar_events.append(birthday)
+    return calendar_events
+
+
 custom_css = """
     .fc-event-past {
         opacity: 0.8;
@@ -58,6 +78,6 @@ custom_css = """
 """
 
 calendar = calendar(
-    events=calendar_events, options=calendar_options, custom_css=custom_css
+    events=calendar_data(), options=calendar_options, custom_css=custom_css
 )
 st.write(calendar)
