@@ -9,46 +9,13 @@ calendar_options = {
     "firstDay": "1",  # Monday
     "headerToolbar": {"center": "title", "right": "today prev,next", "left": ""},
     "initialView": "dayGridMonth",
-    # "slotMinTime": "06:00:00",
-    # "slotMaxTime": "18:00:00",
-    # "resourceGroupField": "building",
-    # "resources": [
-    #     {"id": "a", "building": "Building A", "title": "Building A"},
-    #     {"id": "b", "building": "Building A", "title": "Building B"},
-    #     {"id": "c", "building": "Building B", "title": "Building C"},
-    #     {"id": "d", "building": "Building B", "title": "Building D"},
-    #     {"id": "e", "building": "Building C", "title": "Building E"},
-    #     {"id": "f", "building": "Building C", "title": "Building F"},
-    # ],
 }
 
-# calendar_events = [
-#     {
-#         "title": "Oleh",
-#         "allDay": "true",
-#         "start": "2023-10-04T00:00:00",
-#         "resourceId": "a",
-#         "description": "Lecture",
-#     },
-#     {
-#         "title": "Nazar",
-#         "allDay": "true",
-#         "start": "2023-11-04T00:00:00",
-#         "resourceId": "b",
-#     },
-#     {
-#         "title": "Natali Samoylenko",
-#         "allDay": "true",
-#         "start": "2023-10-14T00:00:00",
-#         "resourceId": "a",
-#     },
-# ]
 
-
-# @st.cache_data
+@st.cache_data
 def calendar_data():
     calendar_events = []
-    data = requests.get("http://127.0.0.1:80/birthdays", params={"id": 1234}).json()
+    data = requests.get("http://127.0.0.1:8080/birthdays", params={"id": 1234}).json()
 
     for datacell in data:
         birthday = {
@@ -76,8 +43,17 @@ custom_css = """
         font-size: 2rem;
     }
 """
+widget = """
+    <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="remember_about_birthdays_bot"
+        data-size="large" data-radius="10" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+    <script type="text/javascript">
+        function onTelegramAuth(user) {
+            alert('Logged in as ' + user.first_name + ' ' + user.last_name + ' (' + user.id + (user.username ? ', @' + user.username : '') + ')');
+        }
+    </script>"""
 
-calendar = calendar(
-    events=calendar_data(), options=calendar_options, custom_css=custom_css
-)
-st.write(calendar)
+# calendar = calendar(
+#     events=calendar_data(), options=calendar_options, custom_css=custom_css
+# )
+# st.write(calendar)
+st.markdown(widget, unsafe_allow_html=True)
