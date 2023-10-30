@@ -2,23 +2,36 @@
 <html lang='en'>
 
 <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <meta charset='utf-8' />
+</head>
+
+<body>
+    <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="remember_about_birthdays_bot"
+        data-size="large" data-radius="10" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+    <script type="text/javascript">
+        function onTelegramAuth(user) {
+            alert('Logged in as ' + user.first_name);
+        }
+    </script>
+    <div id='calendar'></div>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
     <script>
 
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth'
+                initialView: 'dayGridMonth',
+                firstDay: '1',
+                headerToolbar: {
+                    right: 'today prev,next'
+                },
             });
             calendar.render();
         });
 
     </script>
-</head>
 
-<body>
-    <div id='calendar'></div>
 </body>
 
 </html>
