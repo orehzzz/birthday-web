@@ -69,7 +69,8 @@ async function getInitData() {
 
 function onTelegramAuth(user) {
     apiAuth(user).then(function () { getInitData() })
-    // alert('Logged in as ' + user.first_name);
+        .then(document.getElementById('widget').style.display = 'none')
+    alert('Logged in as ' + user.first_name);
 }
 
 renderCalendar();
