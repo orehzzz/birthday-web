@@ -34,6 +34,10 @@ function _getCookie(name) {
     }
 }
 
+function _minTwoDigits(n) {
+    return (n < 10 ? '0' : '') + n;
+}
+
 // function getCookie(name) {
 //     function escape(s) { return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, '\\$1'); }
 //     var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
@@ -53,11 +57,8 @@ async function getInitData() {
     for (let i = 0; i < data.length; i++) {
         let name = data[i]['name'];
         let year = date.getFullYear();
-        let month = data[i]['month'];
-        let day = data[i]['day'].toLocaleString('en-US', {
-            minimumIntegerDigits: 2,
-            useGrouping: false
-        })
+        let month = _minTwoDigits(data[i]['month']);
+        let day = _minTwoDigits(data[i]['day']);
         calendar.addEvent({
             title: name,
             start: `${year}-${month}-${day}`,
@@ -70,7 +71,39 @@ async function getInitData() {
 function onTelegramAuth(user) {
     apiAuth(user).then(function () { getInitData() })
         .then(document.getElementById('widget').style.display = 'none')
-    alert('Logged in as ' + user.first_name);
+    // alert('Logged in as ' + user.first_name);
+}
+
+async function createBirthday() {
+    const request_data = {
+        "name": document.getElementById('add_name').value,
+        "day": document.getElementById('add_day').value,
+        "month": document.getElementById('add_month').value,
+        "year": document.getElementById('add_year').value,
+        "note": document.getElementById('add_note').value
+    }
+    await fetch('http://127.0.0.1:8080/birthdays',
+        {
+            headers: {
+                'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(request_data)
+        }).then(response => response.json()).then(data => addEvent(data));
+}
+
+async function addEvent(data_obj) {
+    const day = _minTwoDigits(data_obj['day'])
+    const month = _minTwoDigits(data_obj['month'])
+    const date = new Date();
+    const year = date.getFullYear();
+    calendar.addEvent({
+        title: data_obj['name'],
+        start: `${year}-${month}-${day}`,
+        allDay: true
+    });
 }
 
 renderCalendar();
