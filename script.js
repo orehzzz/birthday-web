@@ -34,15 +34,10 @@ function _getCookie(name) {
     }
 }
 
+
 function _minTwoDigits(n) {
     return (n < 10 ? '0' : '') + n;
 }
-
-// function getCookie(name) {
-//     function escape(s) { return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, '\\$1'); }
-//     var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
-//     return match ? match[1] : null;
-// }
 
 
 async function getInitData() {
@@ -55,15 +50,7 @@ async function getInitData() {
     const data = await response.json();
     const date = new Date();
     for (let i = 0; i < data.length; i++) {
-        let name = data[i]['name'];
-        let year = date.getFullYear();
-        let month = _minTwoDigits(data[i]['month']);
-        let day = _minTwoDigits(data[i]['day']);
-        calendar.addEvent({
-            title: name,
-            start: `${year}-${month}-${day}`,
-            allDay: true
-        }); // maybe add for this and next year
+        addEvent(data[i])
     }
 };
 
@@ -94,7 +81,7 @@ async function createBirthday() {
         }).then(response => response.json()).then(data => addEvent(data));
 }
 
-async function addEvent(data_obj) {
+function addEvent(data_obj) {
     const day = _minTwoDigits(data_obj['day'])
     const month = _minTwoDigits(data_obj['month'])
     const date = new Date();
