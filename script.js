@@ -48,16 +48,17 @@ async function getInitData() {
             credentials: "include"
         });
     const data = await response.json();
-    const date = new Date();
     for (let i = 0; i < data.length; i++) {
-        addEvent(data[i])
+        _addEvent(data[i])
     }
 };
 
 
 function onTelegramAuth(user) {
-    apiAuth(user).then(function () { getInitData() })
+    apiAuth(user)
+        .then(function () { getInitData() })
         .then(document.getElementById('widget').style.display = 'none')
+        .then(function () { fillDelSelect() })
     // alert('Logged in as ' + user.first_name);
 }
 
@@ -78,10 +79,10 @@ async function createBirthday() {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(request_data)
-        }).then(response => response.json()).then(data => addEvent(data));
+        }).then(response => response.json()).then(data => _addEvent(data));
 }
 
-function addEvent(data_obj) {
+function _addEvent(data_obj) {
     const day = _minTwoDigits(data_obj['day'])
     const month = _minTwoDigits(data_obj['month'])
     const date = new Date();
@@ -93,4 +94,11 @@ function addEvent(data_obj) {
     });
 }
 
+async function fillDelSelect() {
+    const selectElement = document.getElementById('del_select');
+    const array = calendar.getEvents()
+    console.log(array)
+    array.forEach(element => console.log(element));
+}
+// selectElement.add(new Option(element))
 renderCalendar();

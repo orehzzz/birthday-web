@@ -34,13 +34,15 @@
             <input type="number" id="add_year" name="year" size="5" />
             <label for="add_note">Note:</label>
             <input type="text" id="add_note" name="note" maxlength="255" size="10" />
-            <button name=add_birthday onclick="createBirthday()">Create</button> <!---type="button"--->
+            <button name=add_birthday onclick="createBirthday()">Add</button> <!---type="button"--->
         </div>
-        <!-- <div>Delete birthday
-                <label for="delete_name">Name:</label>
-                <input type="text" id="del_name" maxlength="255" size="10" />
-            </div>
-            <div>Change birthday
+        <div>Delete birthday
+            <label for="del_select">Name:</label>
+            <select name="pets" id="del_select">
+                <option value="">--Choose--</option>
+            </select>
+        </div>
+        <!-- <div>Change birthday
                 <label for="choose_name">Select to change:</label>
                 <input type="text" id="choose_name" maxlength="255" size="10" />
                 <label for="change_name">Name:</label>
