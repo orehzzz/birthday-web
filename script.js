@@ -54,13 +54,14 @@ async function getInitData() {
 };
 
 
-function onTelegramAuth(user) {
-    apiAuth(user)
-        .then(function () { getInitData() })
-        .then(document.getElementById('widget').style.display = 'none')
-        .then(function () { fillDelSelect() })
+async function onTelegramAuth(user) {
+    await apiAuth(user)
+    await getInitData()
+    await fillDelSelect()
     // alert('Logged in as ' + user.first_name);
+    //.then(document.getElementById('widget').style.display = 'none')
 }
+
 
 async function createBirthday() {
     const request_data = {
@@ -97,8 +98,8 @@ function _addEvent(data_obj) {
 async function fillDelSelect() {
     const selectElement = document.getElementById('del_select');
     const array = calendar.getEvents()
-    console.log(array)
-    array.forEach(element => console.log(element));
+    array.forEach(element => selectElement.add(new Option(element.title)));
 }
-// selectElement.add(new Option(element))
+
+
 renderCalendar();
