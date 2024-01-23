@@ -1,4 +1,3 @@
-
 var calendar;
 
 function renderCalendar() {
@@ -47,7 +46,7 @@ async function getInitData() {
             method: "GET",
             credentials: "include"
         });
-    const data = await response.json();
+    var data = await response.json();
     for (let i = 0; i < data.length; i++) {
         _addEvent(data[i])
     }
@@ -58,8 +57,8 @@ async function onTelegramAuth(user) {
     await apiAuth(user)
     await getInitData()
     await fillDelSelect()
-    // alert('Logged in as ' + user.first_name);
-    //.then(document.getElementById('widget').style.display = 'none')
+        // alert('Logged in as ' + user.first_name);
+        .then(document.getElementById('widget').style.display = 'none')
 }
 
 
@@ -80,7 +79,7 @@ async function createBirthday() {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(request_data)
-        }).then(response => response.json()).then(data => _addEvent(data));
+        }).then(response => response.json()).then(resp_data => _addEvent(resp_data));
 }
 
 function _addEvent(data_obj) {
@@ -97,8 +96,38 @@ function _addEvent(data_obj) {
 
 async function fillDelSelect() {
     const selectElement = document.getElementById('del_select');
-    const array = calendar.getEvents()
-    array.forEach(element => selectElement.add(new Option(element.title)));
+    const events = calendar.getEvents()
+    events.forEach(element => selectElement.add(new Option(element.title)));
+}
+
+async function deleteBirthday() {
+    const selectElement = document.getElementById('del_select');
+    const events = calendar.getEvents()
+    for (let i = 0; i < events.length; i++) {
+        if (events[i].title === selectElement.value) {
+            const del_data = events[i]
+            const response = await fetch(`http://127.0.0.1:8080/birthdays/${del_data.title}`,
+                {
+                    headers: {
+                        'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
+                        "Content-Type": "text/plain", //application/json
+                    },
+                    method: "DELETE",
+                    credentials: "include",
+                })
+            if (response.status === 204) {
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    if (selectElement.options[i].value === del_data.title) {
+                        selectElement.remove(i);
+                        break;
+                    }
+                }
+                del_data.remove()
+            }
+            break;
+        }
+        // calendar.getElementById("")
+    };
 }
 
 
