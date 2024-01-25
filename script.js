@@ -56,7 +56,7 @@ async function getInitData() {
 async function onTelegramAuth(user) {
     await apiAuth(user)
     await getInitData()
-    await fillDelSelect()
+    await fillSelect()
         // alert('Logged in as ' + user.first_name);
         .then(document.getElementById('widget').style.display = 'none')
 }
@@ -82,6 +82,7 @@ async function createBirthday() {
         }).then(response => response.json()).then(resp_data => _addEvent(resp_data));
 }
 
+
 function _addEvent(data_obj) {
     const day = _minTwoDigits(data_obj['day'])
     const month = _minTwoDigits(data_obj['month'])
@@ -94,11 +95,13 @@ function _addEvent(data_obj) {
     });
 }
 
-async function fillDelSelect() {
-    const selectElement = document.getElementById('del_select');
+async function fillSelect() {
+    const selectElements = [document.getElementById('del_select'), document.getElementById('change_select')];
     const events = calendar.getEvents()
-    events.forEach(element => selectElement.add(new Option(element.title)));
+    selectElements.forEach(element => events.forEach
+        (event => element.add(new Option(event.title))));
 }
+
 
 async function deleteBirthday() {
     const selectElement = document.getElementById('del_select');
@@ -126,7 +129,6 @@ async function deleteBirthday() {
             }
             break;
         }
-        // calendar.getElementById("")
     };
 }
 
