@@ -23,7 +23,8 @@
         <script src="script.js" type="text/javascript"></script>
     </div>
     <div class="sidebar">
-        <div>Add birthday
+        <h2 onclick="formViewToggle('add_form')">Add birthday</h2>
+        <div id="add_form" class="hidden">
             <label for="add_name">Name:</label>
             <input type="text" id="add_name" name="name" maxlength="255" size="10" />
             <label for="add_day">Day:</label>
@@ -36,16 +37,18 @@
             <input type="text" id="add_note" name="note" maxlength="255" size="10" />
             <button type="button" name=add_button onclick="createBirthday()">Create</button> <!---type="button"--->
         </div>
-        <div>Delete birthday
+        <h2 onclick="formViewToggle('del_form')">Delete birthday</h2>
+        <div id="del_form" class="hidden">
             <label for="del_select">Select name to delete:</label>
             <select name="delete" id="del_select">
                 <option value="" selected="true">--Choose--</option>
             </select>
             <button type="button" name=del_button onclick="deleteBirthday()">Delete</button>
         </div>
-        <div>Change birthday
+        <h2 onclick="formViewToggle('change_form')">Change birthday</h2>
+        <div id="change_form" class="hidden">
             <label for="change_select">Select name to change:</label>
-            <select name="change" id="change_select">
+            <select name="change" id="change_select" onchange="fillChangeForm()">
                 <option value="" selected="true">--Choose--</option>
             </select>
             <label for="change_name">Name:</label>

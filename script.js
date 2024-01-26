@@ -8,6 +8,7 @@ function renderCalendar() {
         headerToolbar: {
             right: 'today prev,next'
         },
+        dayMaxEvents: true,
     });
     calendar.render();
 };
@@ -57,7 +58,6 @@ async function onTelegramAuth(user) {
     await apiAuth(user)
     await getInitData()
     await fillSelect()
-        // alert('Logged in as ' + user.first_name);
         .then(document.getElementById('widget').style.display = 'none')
 }
 
@@ -96,7 +96,7 @@ function _addEvent(data_obj) {
 }
 
 async function fillSelect() {
-    const selectElements = [document.getElementById('del_select'), document.getElementById('change_select')];
+    const selectElements = [document.getElementById('change_select'), document.getElementById('del_select')];
     const events = calendar.getEvents()
     selectElements.forEach(element => events.forEach
         (event => element.add(new Option(event.title))));
@@ -104,10 +104,15 @@ async function fillSelect() {
 
 
 async function deleteBirthday() {
+    console.log("in func")
     const selectElement = document.getElementById('del_select');
     const events = calendar.getEvents()
     for (let i = 0; i < events.length; i++) {
+        console.log("in for")
+        console.log(events[i].title)
+        console.log(selectElement.value)
         if (events[i].title === selectElement.value) {
+            console.log("in if")
             const del_data = events[i]
             const response = await fetch(`http://127.0.0.1:8080/birthdays/${del_data.title}`,
                 {
@@ -129,8 +134,24 @@ async function deleteBirthday() {
             }
             break;
         }
+        console.log("after if")
     };
+    console.log("after for")
 }
 
+// function fillChangeForm() {
+//     document.getElementById('change_select').value
+
+// }
+
+function formViewToggle(formId) {
+    // var allForms = document.querySelectorAll('[id*="form"]');
+    const form = document.getElementById(formId);
+    if (form.className === 'hidden') {
+        form.classList.remove('hidden');
+    } else {
+        form.classList.add('hidden');
+    }
+}
 
 renderCalendar();

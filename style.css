@@ -46,3 +46,8 @@ body {
     display: block;
     font-size: 16px;
 }
+
+.hidden {
+    visibility: hidden;
+    max-height: 0;
+}
