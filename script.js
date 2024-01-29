@@ -64,7 +64,7 @@ async function onTelegramAuth(user) {
 
 async function createBirthday() {
     const request_data = {
-        "name": document.getElementById('add_name').value,
+        "name": document.getElementById('add_name').value.replace(/\s\s+/g, ' '),
         "day": document.getElementById('add_day').value,
         "month": document.getElementById('add_month').value,
         "year": document.getElementById('add_year').value,
@@ -80,6 +80,7 @@ async function createBirthday() {
             credentials: "include",
             body: JSON.stringify(request_data)
         }).then(response => response.json()).then(resp_data => _addEvent(resp_data));
+    fillSelect();
 }
 
 
@@ -98,21 +99,21 @@ function _addEvent(data_obj) {
 async function fillSelect() {
     const selectElements = [document.getElementById('change_select'), document.getElementById('del_select')];
     const events = calendar.getEvents()
-    selectElements.forEach(element => events.forEach
-        (event => element.add(new Option(event.title))));
+    selectElements.forEach(element => {
+        while (element.options.length > 1) {
+            element.remove(1);
+        };
+        events.forEach
+            (event => element.add(new Option(event.title)))
+    })
 }
 
 
 async function deleteBirthday() {
-    console.log("in func")
     const selectElement = document.getElementById('del_select');
     const events = calendar.getEvents()
     for (let i = 0; i < events.length; i++) {
-        console.log("in for")
-        console.log(events[i].title)
-        console.log(selectElement.value)
         if (events[i].title === selectElement.value) {
-            console.log("in if")
             const del_data = events[i]
             const response = await fetch(`http://127.0.0.1:8080/birthdays/${del_data.title}`,
                 {
@@ -124,19 +125,12 @@ async function deleteBirthday() {
                     credentials: "include",
                 })
             if (response.status === 204) {
-                for (let i = 0; i < selectElement.options.length; i++) {
-                    if (selectElement.options[i].value === del_data.title) {
-                        selectElement.remove(i);
-                        break;
-                    }
-                }
                 del_data.remove()
+                fillSelect()
             }
             break;
         }
-        console.log("after if")
     };
-    console.log("after for")
 }
 
 // function fillChangeForm() {
