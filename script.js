@@ -1,12 +1,17 @@
 var calendar;
 
+
 function renderCalendar() {
     var calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
+        initialView: 'multiMonthYear',
+        views: {
+            listYear: { buttonText: 'list' },
+            multiMonthYear: { buttonText: 'calendar' },
+        },
         firstDay: '1',
         headerToolbar: {
-            right: 'today prev,next'
+            right: 'listYear,multiMonthYear'
         },
         dayMaxEvents: true,
     });
@@ -96,6 +101,7 @@ function _addEvent(data_obj) {
     });
 }
 
+
 async function fillSelect() {
     const selectElements = [document.getElementById('change_select'), document.getElementById('del_select')];
     const events = calendar.getEvents()
@@ -133,10 +139,12 @@ async function deleteBirthday() {
     };
 }
 
+
 // function fillChangeForm() {
 //     document.getElementById('change_select').value
 
 // }
+
 
 function formViewToggle(formId) {
     // var allForms = document.querySelectorAll('[id*="form"]');
@@ -147,5 +155,6 @@ function formViewToggle(formId) {
         form.classList.add('hidden');
     }
 }
+
 
 renderCalendar();
