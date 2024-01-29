@@ -26,15 +26,15 @@
         <h2 onclick="formViewToggle('add_form')">Add birthday</h2>
         <div id="add_form" class="hidden">
             <label for="add_name">Name:</label>
-            <input type="text" id="add_name" name="name" maxlength="255" size="10" />
+            <input type="text" id="add_name" name="name" maxlength="255" size="10" value=""/>
             <label for="add_day">Day:</label>
-            <input type="number" id="add_day" name="day" size="3" />
+            <input type="number" id="add_day" name="day" size="3" min="1" max="31" value=""/>
             <label for="add_month">Month:</label>
-            <input type="number" id="add_month" name="month" size="3" />
+            <input type="number" id="add_month" name="month" size="3" min="1" max="12" value=""/>
             <label for="add_year">Year:</label>
-            <input type="number" id="add_year" name="year" size="5" />
+            <input type="number" id="add_year" name="year" size="6" value=""/>
             <label for="add_note">Note:</label>
-            <input type="text" id="add_note" name="note" maxlength="255" size="10" />
+            <input type="text" id="add_note" name="note" maxlength="255" size="10" value=""/>
             <button type="button" name=add_button onclick="createBirthday()">Create</button> <!---type="button"--->
         </div>
         <h2 onclick="formViewToggle('del_form')">Delete birthday</h2>
@@ -54,11 +54,11 @@
             <label for="change_name">Name:</label>
             <input type="text" id="change_name" maxlength="255" size="10" />
             <label for="change_day">Day:</label>
-            <input type="number" id="change_day" name="day" size="3" />
+            <input type="number" id="change_day" name="day" size="3" min="1" max="31"/>
             <label for="change_month">Month:</label>
-            <input type="number" id="change_month" name="month" size="3" />
+            <input type="number" id="change_month" name="month" size="3" min="1" max="12"/>
             <label for="change_year">Year:</label>
-            <input type="number" id="change_year" name="year" size="5" />
+            <input type="number" id="change_year" name="year" size="6" />
             <label for="change_note">Note:</label>
             <input type="text" id="change_note" maxlength="255" size="10" />
             <button type="button" name=change_button onclick="changeBirthday()">Change</button>

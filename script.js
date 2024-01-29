@@ -75,6 +75,13 @@ async function createBirthday() {
         "year": document.getElementById('add_year').value,
         "note": document.getElementById('add_note').value
     }
+    console.log(request_data['year'], request_data['note'])
+    if (request_data['year'] === (undefined || '') ){
+        delete request_data['year']
+    }
+    if (request_data['note'] === (undefined || '') ){
+        delete request_data['note']
+    }
     await fetch('http://127.0.0.1:8080/birthdays',
         {
             headers: {
@@ -93,11 +100,16 @@ function _addEvent(data_obj) {
     const day = _minTwoDigits(data_obj['day'])
     const month = _minTwoDigits(data_obj['month'])
     const date = new Date();
-    const year = date.getFullYear();
+    const yearCurrent = date.getFullYear();
+    console.log(data_obj['note'], data_obj['year'])
     calendar.addEvent({
         title: data_obj['name'],
-        start: `${year}-${month}-${day}`,
-        allDay: true
+        start: `${yearCurrent}-${month}-${day}`,
+        allDay: true,
+        extendedProps: {
+            note: data_obj['note'],
+            yearBirth: data_obj['year']
+        }
     });
 }
 
@@ -140,10 +152,27 @@ async function deleteBirthday() {
 }
 
 
-// function fillChangeForm() {
-//     document.getElementById('change_select').value
-
-// }
+function fillChangeForm() {
+    const origName = document.getElementById('change_select').value
+    const events = calendar.getEvents()
+    for (let i = 0; i < events.length; i++) {
+        if (events[i].title === origName) {
+            console.log(document.getElementById('change_note').value)
+            document.getElementById('change_name').value = events[i].title
+            document.getElementById('change_day').value = events[i].start.getDate()
+            document.getElementById('change_month').value = events[i].start.getMonth()
+            if (events[i].extendedProps.yearBirth != undefined) {
+                document.getElementById('change_year').value = events[i].extendedProps.yearBirth
+            }
+            else { document.getElementById('change_year').value = undefined }
+            if (events[i].extendedProps.note != (undefined || '')) {
+                document.getElementById('change_note').value = events[i].extendedProps.note
+            }
+            else { document.getElementById('change_note').value = undefined }
+            break;
+        }
+    }
+}
 
 
 function formViewToggle(formId) {
