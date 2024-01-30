@@ -69,17 +69,16 @@ async function onTelegramAuth(user) {
 
 async function createBirthday() {
     const request_data = {
-        "name": document.getElementById('add_name').value.replace(/\s\s+/g, ' '),
+        "name": document.getElementById('add_name').value,
         "day": document.getElementById('add_day').value,
         "month": document.getElementById('add_month').value,
         "year": document.getElementById('add_year').value,
         "note": document.getElementById('add_note').value
     }
-    console.log(request_data['year'], request_data['note'])
-    if (request_data['year'] === (undefined || '') ){
+    if (request_data['year'] === (undefined || '')) {
         delete request_data['year']
     }
-    if (request_data['note'] === (undefined || '') ){
+    if (request_data['note'] === (undefined || '')) {
         delete request_data['note']
     }
     await fetch('http://127.0.0.1:8080/birthdays',
@@ -101,12 +100,12 @@ function _addEvent(data_obj) {
     const month = _minTwoDigits(data_obj['month'])
     const date = new Date();
     const yearCurrent = date.getFullYear();
-    console.log(data_obj['note'], data_obj['year'])
     calendar.addEvent({
         title: data_obj['name'],
         start: `${yearCurrent}-${month}-${day}`,
         allDay: true,
         extendedProps: {
+            id: data_obj['id'],
             note: data_obj['note'],
             yearBirth: data_obj['year']
         }
@@ -122,7 +121,9 @@ async function fillSelect() {
             element.remove(1);
         };
         events.forEach
-            (event => element.add(new Option(event.title)))
+            (event => {
+                element.add(new Option(text = event.title, value = event.extendedProps.id))
+            })
     })
 }
 
@@ -131,9 +132,8 @@ async function deleteBirthday() {
     const selectElement = document.getElementById('del_select');
     const events = calendar.getEvents()
     for (let i = 0; i < events.length; i++) {
-        if (events[i].title === selectElement.value) {
-            const del_data = events[i]
-            const response = await fetch(`http://127.0.0.1:8080/birthdays/${del_data.title}`,
+        if (events[i].extendedProps.id == selectElement.value) {
+            const response = await fetch(`http://127.0.0.1:8080/birthdays/${events[i].extendedProps.id}`,
                 {
                     headers: {
                         'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
@@ -143,7 +143,7 @@ async function deleteBirthday() {
                     credentials: "include",
                 })
             if (response.status === 204) {
-                del_data.remove()
+                events[i].remove()
                 fillSelect()
             }
             break;
@@ -153,11 +153,9 @@ async function deleteBirthday() {
 
 
 function fillChangeForm() {
-    const origName = document.getElementById('change_select').value
     const events = calendar.getEvents()
     for (let i = 0; i < events.length; i++) {
-        if (events[i].title === origName) {
-            console.log(document.getElementById('change_note').value)
+        if (events[i].extendedProps.id === document.getElementById('change_select').value) {
             document.getElementById('change_name').value = events[i].title
             document.getElementById('change_day').value = events[i].start.getDate()
             document.getElementById('change_month').value = events[i].start.getMonth()
