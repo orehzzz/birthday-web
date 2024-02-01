@@ -92,6 +92,42 @@ async function createBirthday() {
             body: JSON.stringify(request_data)
         }).then(response => response.json()).then(resp_data => _addEvent(resp_data));
     fillSelect();
+    clearForm("add_form")
+}
+
+
+async function changeBirthday() {
+    const change_event = calendar.getEventById(document.getElementById('change_select').value)
+    console.log(change_event)
+    const request_data = {
+        "name": document.getElementById('change_name').value,
+        "day": document.getElementById('change_day').value,
+        "month": document.getElementById('change_month').value,
+        "year": document.getElementById('change_year').value,
+        "note": document.getElementById('change_note').value
+    }
+    if (request_data['year'] === (undefined || '')) {
+        delete request_data['year']
+    }
+    if (request_data['note'] === (undefined || '')) {
+        delete request_data['note']
+    }
+    const response = await fetch(`http://127.0.0.1:8080/birthdays/${change_event.id}`,
+        {
+            headers: {
+                'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
+                "Content-Type": "application/json",
+            },
+            method: "PUT",
+            credentials: "include",
+            body: JSON.stringify(request_data)
+        })
+    if (response.status === 200) {
+        change_event.remove()
+        _addEvent(response.json)
+        fillSelect()
+        clearForm("change_form")
+    }
 }
 
 
@@ -114,7 +150,7 @@ function _addEvent(data_obj) {
 
 
 async function fillSelect() {
-    const selectElements = [document.getElementById('change_select'), document.getElementById('del_select')];
+    const selectElements = [document.getElementById('change_select'), document.getElementById('delete_select')];
     const events = calendar.getEvents()
     selectElements.forEach(element => {
         while (element.options.length > 1) {
@@ -129,8 +165,8 @@ async function fillSelect() {
 
 
 async function deleteBirthday() {
-    const del_event = calendar.getEventById(document.getElementById('del_select').value);
-    const response = await fetch(`http://127.0.0.1:8080/birthdays/${del_event.id}`,
+    const delete_event = calendar.getEventById(document.getElementById('delete_select').value)
+    const response = await fetch(`http://127.0.0.1:8080/birthdays/${delete_event.id}`,
         {
             headers: {
                 'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
@@ -140,7 +176,7 @@ async function deleteBirthday() {
             credentials: "include",
         })
     if (response.status === 204) {
-        del_event.remove()
+        delete_event.remove()
         fillSelect()
     }
 }
@@ -151,7 +187,7 @@ function fillChangeForm() {
 
     document.getElementById('change_name').value = event.title
     document.getElementById('change_day').value = event.start.getDate()
-    document.getElementById('change_month').value = event.start.getMonth()
+    document.getElementById('change_month').value = event.start.getMonth() + 1
     if (event.extendedProps.yearBirth != undefined) {
         document.getElementById('change_year').value = event.extendedProps.yearBirth
     }
@@ -163,6 +199,10 @@ function fillChangeForm() {
 }
 
 
+function clearForm(formId) {
+    const div = document.getElementById(formId)
+    div.querySelectorAll("input").forEach(element => element.value = '')
+}
 
 
 function formViewToggle(formId) {
