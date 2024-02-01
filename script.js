@@ -101,11 +101,11 @@ function _addEvent(data_obj) {
     const date = new Date();
     const yearCurrent = date.getFullYear();
     calendar.addEvent({
+        id: data_obj['id'],
         title: data_obj['name'],
         start: `${yearCurrent}-${month}-${day}`,
         allDay: true,
         extendedProps: {
-            id: data_obj['id'],
             note: data_obj['note'],
             yearBirth: data_obj['year']
         }
@@ -122,55 +122,47 @@ async function fillSelect() {
         };
         events.forEach
             (event => {
-                element.add(new Option(text = event.title, value = event.extendedProps.id))
+                element.add(new Option(text = event.title, value = event.id))
             })
     })
 }
 
 
 async function deleteBirthday() {
-    const selectElement = document.getElementById('del_select');
-    const events = calendar.getEvents()
-    for (let i = 0; i < events.length; i++) {
-        if (events[i].extendedProps.id == selectElement.value) {
-            const response = await fetch(`http://127.0.0.1:8080/birthdays/${events[i].extendedProps.id}`,
-                {
-                    headers: {
-                        'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
-                        "Content-Type": "text/plain", //application/json
-                    },
-                    method: "DELETE",
-                    credentials: "include",
-                })
-            if (response.status === 204) {
-                events[i].remove()
-                fillSelect()
-            }
-            break;
-        }
-    };
+    const del_event = calendar.getEventById(document.getElementById('del_select').value);
+    const response = await fetch(`http://127.0.0.1:8080/birthdays/${del_event.id}`,
+        {
+            headers: {
+                'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
+                "Content-Type": "text/plain", //application/json
+            },
+            method: "DELETE",
+            credentials: "include",
+        })
+    if (response.status === 204) {
+        del_event.remove()
+        fillSelect()
+    }
 }
 
 
 function fillChangeForm() {
-    const events = calendar.getEvents()
-    for (let i = 0; i < events.length; i++) {
-        if (events[i].extendedProps.id === document.getElementById('change_select').value) {
-            document.getElementById('change_name').value = events[i].title
-            document.getElementById('change_day').value = events[i].start.getDate()
-            document.getElementById('change_month').value = events[i].start.getMonth()
-            if (events[i].extendedProps.yearBirth != undefined) {
-                document.getElementById('change_year').value = events[i].extendedProps.yearBirth
-            }
-            else { document.getElementById('change_year').value = undefined }
-            if (events[i].extendedProps.note != (undefined || '')) {
-                document.getElementById('change_note').value = events[i].extendedProps.note
-            }
-            else { document.getElementById('change_note').value = undefined }
-            break;
-        }
+    const event = calendar.getEventById(document.getElementById('change_select').value);
+
+    document.getElementById('change_name').value = event.title
+    document.getElementById('change_day').value = event.start.getDate()
+    document.getElementById('change_month').value = event.start.getMonth()
+    if (event.extendedProps.yearBirth != undefined) {
+        document.getElementById('change_year').value = event.extendedProps.yearBirth
     }
+    else { document.getElementById('change_year').value = undefined }
+    if (event.extendedProps.note != (undefined || '')) {
+        document.getElementById('change_note').value = event.extendedProps.note
+    }
+    else { document.getElementById('change_note').value = undefined }
 }
+
+
 
 
 function formViewToggle(formId) {
