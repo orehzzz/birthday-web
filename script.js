@@ -62,8 +62,9 @@ async function getInitData() {
 async function onTelegramAuth(user) {
     await apiAuth(user)
     await getInitData()
-    await fillSelect()
         .then(document.getElementById('widget').style.display = 'none')
+    fillSelect()
+    showSidebar()
 }
 
 
@@ -81,7 +82,7 @@ async function createBirthday() {
     if (request_data['note'] === (undefined || '')) {
         delete request_data['note']
     }
-    await fetch('http://127.0.0.1:8080/birthdays',
+    const response = await fetch('http://127.0.0.1:8080/birthdays',
         {
             headers: {
                 'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
@@ -90,7 +91,9 @@ async function createBirthday() {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(request_data)
-        }).then(response => response.json()).then(resp_data => _addEvent(resp_data));
+        })
+    const data = await response.json()
+    _addEvent(data)
     fillSelect();
     clearForm("add_form")
 }
@@ -98,7 +101,6 @@ async function createBirthday() {
 
 async function changeBirthday() {
     const change_event = calendar.getEventById(document.getElementById('change_select').value)
-    console.log(change_event)
     const request_data = {
         "name": document.getElementById('change_name').value,
         "day": document.getElementById('change_day').value,
@@ -122,9 +124,10 @@ async function changeBirthday() {
             credentials: "include",
             body: JSON.stringify(request_data)
         })
+    const data = await response.json()
     if (response.status === 200) {
         change_event.remove()
-        _addEvent(response.json)
+        _addEvent(data)
         fillSelect()
         clearForm("change_form")
     }
@@ -215,5 +218,9 @@ function formViewToggle(formId) {
     }
 }
 
+function showSidebar() {
+    const sidebar = document.getElementById('sidebar')
+    sidebar.classList.remove('hidden')
+}
 
 renderCalendar();
