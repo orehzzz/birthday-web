@@ -65,6 +65,7 @@ async function onTelegramAuth(user) {
         .then(document.getElementById('widget').style.display = 'none')
     fillSelect()
     showSidebar()
+    setIdleTimeout(3590000) // 10 seconds before an hour
 }
 
 
@@ -222,5 +223,15 @@ function showSidebar() {
     const sidebar = document.getElementById('sidebar')
     sidebar.classList.remove('hidden')
 }
+
+
+function setIdleTimeout(milliseconds) { // later change to auto relogin from cache
+    setTimeout(onExpires, milliseconds);
+    function onExpires() {
+        alert("Reload required")
+        location.reload()
+    }
+}
+
 
 renderCalendar();
