@@ -69,7 +69,7 @@ async function onTelegramAuth(user) {
 }
 
 
-async function createBirthday() {
+async function postRequest() {
     const request_data = {
         "name": document.getElementById('add_name').value,
         "day": document.getElementById('add_day').value,
@@ -93,14 +93,11 @@ async function createBirthday() {
             credentials: "include",
             body: JSON.stringify(request_data)
         })
-    const data = await response.json()
-    _addEvent(data)
-    fillSelect();
-    clearForm("add_form")
+    return response
 }
 
 
-async function changeBirthday() {
+async function putRequest() {
     const change_event = calendar.getEventById(document.getElementById('change_select').value)
     const request_data = {
         "name": document.getElementById('change_name').value,
@@ -125,13 +122,7 @@ async function changeBirthday() {
             credentials: "include",
             body: JSON.stringify(request_data)
         })
-    const data = await response.json()
-    if (response.status === 200) {
-        change_event.remove()
-        _addEvent(data)
-        fillSelect()
-        clearForm("change_form")
-    }
+    return response
 }
 
 
@@ -168,20 +159,27 @@ async function fillSelect() {
 }
 
 
-async function deleteBirthday() {
-    const delete_event = calendar.getEventById(document.getElementById('delete_select').value)
-    const response = await fetch(`http://127.0.0.1:8080/birthdays/${delete_event.id}`,
-        {
-            headers: {
-                'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
-                "Content-Type": "text/plain", //application/json
-            },
-            method: "DELETE",
-            credentials: "include",
-        })
-    if (response.status === 204) {
-        delete_event.remove()
-        fillSelect()
+async function deleteRequest() {
+    try {
+        const delete_event = calendar.getEventById(document.getElementById('delete_select').value)
+        const response = await fetch(`http://127.0.0.1:8080/birthdays/${delete_event.id}`,
+            {
+                headers: {
+                    'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
+                    "Content-Type": "text/plain", //application/json
+                },
+                method: "DELETE",
+                credentials: "include",
+            })
+        if (response.status === 204) {
+            delete_event.remove()
+            fillSelect()
+        }
+        else {
+            throw "exception"
+        }
+    } catch (exception) {
+        alert(exception)
     }
 }
 
@@ -200,12 +198,6 @@ function fillChangeForm() {
         document.getElementById('change_note').value = event.extendedProps.note
     }
     else { document.getElementById('change_note').value = undefined }
-}
-
-
-function clearForm(formId) {
-    const div = document.getElementById(formId)
-    div.querySelectorAll("input").forEach(element => element.value = '')
 }
 
 
@@ -232,6 +224,53 @@ function setIdleTimeout(milliseconds) { // later change to auto relogin from cac
         location.reload()
     }
 }
+
+//Add form submit
+document.addEventListener('DOMContentLoaded', (event) => {
+    var add_form = document.getElementById("add_form")
+    add_form.addEventListener("submit", async function (e) {
+        e.preventDefault()
+        try {
+            const response = await postRequest()
+            if (response.status === 201) {
+                const data = await response.json()
+                _addEvent(data)
+                fillSelect()
+            }
+            else {
+                throw "exception"
+            }
+            add_form.reset()
+        }
+        catch (exception) {
+            alert(exception)
+        }
+    });
+});
+
+//Change form submit
+document.addEventListener('DOMContentLoaded', (event) => {
+    var change_form = document.getElementById("change_form")
+    change_form.addEventListener("submit", async function (e) {
+        e.preventDefault()
+        try {
+            const response = await putRequest()
+            if (response.status === 200) {
+                const change_event = calendar.getEventById(document.getElementById('change_select').value)
+                change_event.remove()
+                const data = await response.json()
+                _addEvent(data)
+                fillSelect()
+            }
+            else {
+                throw "exception"
+            }
+            change_form.reset()
+        } catch (exception) {
+            alert(exception)
+        }
+    });
+});
 
 
 renderCalendar();
