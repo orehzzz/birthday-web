@@ -40,15 +40,15 @@
         <h2 onclick="formViewToggle('change_form')">Change birthday</h2>
         <form id="change_form" class="hidden">
             <label for="change_select">Select to change:</label>
-            <select name="change" id="change_select" onchange="fillChangeForm()">
+            <select name="change" id="change_select" onchange="fillChangeForm()" required>
                 <option value="" selected="true">--Choose--</option>
             </select>
             <label for="change_name">Name:</label>
-            <input type="text" id="change_name" maxlength="255" size="10" />
+            <input type="text" id="change_name" maxlength="255" size="10" required />
             <label for="change_day">Day:</label>
-            <input type="number" id="change_day" name="day" size="3" min="1" max="31" />
+            <input type="number" id="change_day" name="day" size="3" min="1" max="31" required />
             <label for="change_month">Month:</label>
-            <input type="number" id="change_month" name="month" size="3" min="1" max="12" />
+            <input type="number" id="change_month" name="month" size="3" min="1" max="12" required />
             <label for="change_year">Year:</label>
             <input type="number" id="change_year" name="year" size="6" />
             <label for="change_note">Note:</label>
