@@ -160,27 +160,17 @@ async function fillSelect() {
 
 
 async function deleteRequest() {
-    try {
-        const delete_event = calendar.getEventById(document.getElementById('delete_select').value)
-        const response = await fetch(`http://127.0.0.1:8080/birthdays/${delete_event.id}`,
-            {
-                headers: {
-                    'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
-                    "Content-Type": "text/plain", //application/json
-                },
-                method: "DELETE",
-                credentials: "include",
-            })
-        if (response.status === 204) {
-            delete_event.remove()
-            fillSelect()
-        }
-        else {
-            throw "exception"
-        }
-    } catch (exception) {
-        alert(exception)
-    }
+    const delete_event = calendar.getEventById(document.getElementById('delete_select').value)
+    const response = await fetch(`http://127.0.0.1:8080/birthdays/${delete_event.id}`,
+        {
+            headers: {
+                'X-CSRF-TOKEN': _getCookie('csrf_access_token'),
+                "Content-Type": "text/plain", //application/json
+            },
+            method: "DELETE",
+            credentials: "include",
+        })
+    return response
 }
 
 
@@ -225,7 +215,7 @@ function setIdleTimeout(milliseconds) { // later change to auto relogin from cac
     }
 }
 
-//Add form submit
+//Add form submit handler
 document.addEventListener('DOMContentLoaded', (event) => {
     var add_form = document.getElementById("add_form")
     add_form.addEventListener("submit", async function (e) {
@@ -248,7 +238,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
-//Change form submit
+//Change form submit handler
 document.addEventListener('DOMContentLoaded', (event) => {
     var change_form = document.getElementById("change_form")
     change_form.addEventListener("submit", async function (e) {
@@ -271,6 +261,30 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 });
+
+//Delete form submit handler
+document.addEventListener('DOMContentLoaded', (event) => {
+    var delete_form = document.getElementById("delete_form")
+    delete_form.addEventListener("submit", async function (e) {
+        e.preventDefault()
+        const delete_event = calendar.getEventById(document.getElementById('delete_select').value)
+        try {
+            const response = await deleteRequest()
+            if (response.status === 204) {
+                delete_event.remove()
+                fillSelect()
+            }
+            else {
+                throw "exception"
+            }
+            delete_form.reset()
+        }
+        catch (exception) {
+            alert(exception)
+        }
+    });
+});
+
 
 
 renderCalendar();

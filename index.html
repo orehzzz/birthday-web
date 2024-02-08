@@ -56,13 +56,13 @@
             <input type="submit" value="Change">
         </form>
         <h2 onclick="formViewToggle('delete_form')">Delete birthday</h2>
-        <div id="delete_form" class="hidden">
+        <form id="delete_form" class="hidden">
             <label for="delete_select">Select to delete:</label>
-            <select name="delete" id="delete_select">
+            <select name="delete" id="delete_select" required>
                 <option value="" selected="true">--Choose--</option>
             </select>
-            <button type="button" name=delete_button onclick="deleteRequest()">Delete</button>
-        </div>
+            <input type="submit" value="Delete">
+        </form>
     </div>
 </body>
 
